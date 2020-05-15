@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutterdelivery/services/authentication.dart';
+import 'package:geolocator/geolocator.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
       : super(key: key);
@@ -11,11 +12,18 @@ class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _HomePageState();
 }
+
 class _HomePageState extends State<HomePage> {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager=true;
+
+  Position _currentPosition;
+  String _currentAddress;
+
   @override
   void initState() {
     super.initState();
   }
+
   signOut() async {
     try {
       await widget.auth.signOut();
@@ -24,22 +32,17 @@ class _HomePageState extends State<HomePage> {
       print(e);
     }
   }
-  Future navigateToNewPage(context) async {
-    /// Navigator.push(context, MaterialPageRoute(builder: (context) =>NewPage() ));
-  }
-  Future navigateToImageAPI(context) async {
-    /// Navigator.push(context, MaterialPageRoute(builder: (context) => DataPage()));
-  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Home'),
+          title: new Text(' HOME '),
           actions: <Widget>[
             new FlatButton(
-                child: new Text('Logout',
+                child: new Text('Log Out',
                     style: new TextStyle(fontSize: 17.0, color: Colors.white)),
                 onPressed: signOut)
           ],
@@ -50,27 +53,26 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),),
-                  Center(
-                    child: FlatButton(child: Text("Image API Service",style: TextStyle(color: Colors.white,fontSize: 20.0),),
-                      onPressed: () {navigateToImageAPI(context);},
-                      color: Colors.lightBlue,
-                      colorBrightness: Brightness.dark,
-                      disabledColor:Colors.blueGrey,
-                      highlightColor: Colors.red,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 15.0),),
-                  ),
-                  Padding(padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),),
+                  if (_currentAddress != null) Text(_currentAddress),
                   FlatButton(
-                    child: Text("Check Internet Connectivity",style: TextStyle(color: Colors.white,fontSize: 20.0),),
-                    onPressed: () {navigateToNewPage(context);},
-                    color: Colors.lightBlue,
-                    colorBrightness: Brightness.dark,
-                    disabledColor:Colors.blueGrey,
-                    highlightColor: Colors.red,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 15.0),
+                    child: Text("Find Current Location",style: TextStyle(color: Colors.white)),
+                    color: Colors.green,
+                    onPressed: () {
+                      _getCurrentLocation();
+                    },
+                  ),
+                  TextField(
+                    decoration:
+                    const InputDecoration(hintText: 'Please enter an address'),
+                    controller: _addressTextController,
+                  ),
+                  if (_distance != null) Text(_distance),
+                  RaisedButton(
+                    child: const Text('Find Distance'),
+                    onPressed: () {
+                      _onLookupCoordinatesPressed(context);
+                      _onCalculatePressed();
+                    },
                   ),
                 ],
               ),
@@ -80,6 +82,82 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  final Geolocator _geolocator = Geolocator();
+  final TextEditingController _addressTextController = TextEditingController();
+
+  List<String> _placemarkCoords = [];
+  Placemark pos;
+  Future<void> _onLookupCoordinatesPressed(BuildContext context) async {
+    final List<Placemark> placemarks = await Future(
+            () => _geolocator.placemarkFromAddress(_addressTextController.text))
+        .catchError((onError) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(onError.toString()),
+      ));
+      return Future.value(List<Placemark>());
+    });
+
+    if (placemarks != null && placemarks.isNotEmpty) {
+      pos = placemarks[0];
+      final List<String> coords = placemarks
+          .map((placemark) =>
+      pos.position?.latitude.toString() +
+          ', ' +
+          pos.position?.longitude.toString())
+          .toList();
+      setState(() {
+        _placemarkCoords = coords;
+      });
+    }
+  }
+String _distance;
+  Future<void> _onCalculatePressed() async {
+
+    final double startLatitude = double.parse(pos.position?.latitude.toString());
+    final double startLongitude = double.parse(pos.position?.longitude.toString());
+    final double endLatitude = double.parse(_currentPosition.latitude.toString());
+    final double endLongitude = double.parse(_currentPosition.longitude.toString());
+
+    final double distance = await Geolocator().distanceBetween(
+        startLatitude, startLongitude, endLatitude, endLongitude);
+    setState(() {
+      _distance = distance.toString();
+    });
+  }
+
+  _getCurrentLocation() {
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+        "${place.administrativeArea}, ${place.postalCode}, ${place.country}";
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+
+
   Future<bool> _onBackPressed() {
     return showDialog(
       context: context,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterdelivery/services/authentication.dart';
+
 class LoginSignupPage extends StatefulWidget {
   LoginSignupPage({this.auth, this.loginCallback});
   final BaseAuth auth;
@@ -7,7 +8,9 @@ class LoginSignupPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _LoginSignupPageState();
 }
+
 class _LoginSignupPageState extends State<LoginSignupPage> {
+
   final _formKey = new GlobalKey<FormState>();
   String _email;
   String _password;
@@ -16,6 +19,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   bool _isLoading;
   bool _passwordVisible;
   String _data;
+
   bool validateAndSave() {
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -24,6 +28,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     }
     return false;
   }
+
   void validateAndSubmit() async {
     setState(() {
       _errorMessage = "";
@@ -56,6 +61,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       }
     }
   }
+
   @override
   void initState() {
     _passwordVisible = false;
@@ -64,16 +70,19 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     _isLoginForm = true;
     super.initState();
   }
+
   void resetForm() {
     _formKey.currentState.reset();
     _errorMessage = "";
   }
+
   void toggleFormMode() {
     resetForm();
     setState(() {
       _isLoginForm = !_isLoginForm;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     if(_isLoginForm){
@@ -96,6 +105,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           )),
     );
   }
+
   Widget _showCircularProgress() {
     if (_isLoading) {
       return buildWaitingScreen();
@@ -105,6 +115,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       width: 0.0,
     );
   }
+
   Widget _showForm() {
     return new Container(
         padding: EdgeInsets.all(16.0),
@@ -123,6 +134,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
         ));
   }
+
   Widget showErrorMessage() {
     if (_errorMessage.length > 0 && _errorMessage != null) {
       return new Text(
@@ -139,6 +151,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       );
     }
   }
+
   Widget showLogo() {
     return new Hero(
       tag: 'hero',
@@ -150,16 +163,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: CircleAvatar(
             backgroundColor: Colors.transparent,
             radius: 100.0,
-            child: Image.asset('assets/ecell.jpeg'),
+            child: Image.asset('assets/aker.jpg'),
           ),
         ),
       ),
     );
   }
+
   var _emailController = TextEditingController();
   var _pwdController = TextEditingController();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _pwdFocus = FocusNode();
+
   Widget showEmailInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 0.0),
@@ -184,6 +199,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ),
     );
   }
+
   Widget showPasswordInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
@@ -222,10 +238,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ),
     );
   }
+
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
+
   Widget showSecondaryButton() {
     return new FlatButton(
         child: new Text(
@@ -233,6 +251,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: toggleFormMode);
   }
+
   Widget showPrimaryButton() {
     return new Padding(
         padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
@@ -249,6 +268,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
         ));
   }
+
   Future<bool> _onBackPressed() {
     return showDialog(
       context: context,
@@ -274,6 +294,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       },
     ) ?? false;
   }
+
   Widget buildWaitingScreen() {
     return Scaffold(
       body: Stack(
@@ -296,7 +317,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                         backgroundColor: Colors.white,
                         radius: 120.0,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage("assets/ecell.jpeg"),
+                          backgroundImage: AssetImage("assets/aker.jpg"),
                           radius: 100.0,
                         ),
                       ),

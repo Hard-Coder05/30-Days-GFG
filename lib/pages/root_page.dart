@@ -58,6 +58,7 @@ class _RootPageState extends State<RootPage> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
+
             decoration: BoxDecoration(
                 color: Colors.lightBlue),
           ),
@@ -74,7 +75,7 @@ class _RootPageState extends State<RootPage> {
                         backgroundColor: Colors.white,
                         radius: 120.0,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage("assets/ecell.jpeg"),
+                          backgroundImage: AssetImage("assets/aker.jpg"),
                           radius: 100.0,
                         ),
                       ),
