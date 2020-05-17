@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   RaisedButton(
-                    child: const Text('Display Chart'),
+                    child: const Text('Display Charts'),
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => ChartPage()));
                     },
