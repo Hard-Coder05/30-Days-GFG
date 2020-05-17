@@ -1,16 +1,17 @@
-# flutterdelivery
+# Delivery App
 
-A new Flutter application.
+This is the code for a flutter application.
 
-## Getting Started
+### Features:
 
-This project is a starting point for a Flutter application.
+1. Geolocator is used to find current location.
 
-A few resources to get you started if this is your first Flutter project:
+2. Geolocator is again used to find the coordinates of the entered Address
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+3. Geolocator is used to calculate the distance between the current locaation and address entered.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+4. JSON API is called using HTTP Package
+
+5. The JSON data is used to plot bar graph.
+
+6. Login-SignUp is done using Google FireBase
