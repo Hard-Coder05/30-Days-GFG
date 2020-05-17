@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutterdelivery/services/authentication.dart';
@@ -23,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   Placemark pos;
   Position _currentPosition;
   String _currentAddress;
-  String _distance;
+  double _distance;
 
   /// Function for init state initialization
   @override
@@ -63,13 +66,20 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  if (_currentAddress != null) Text(_currentAddress),
+                  if (_currentAddress != null) Text("Your Current Address is: $_currentAddress",style: TextStyle(fontSize: 15.0,color: Colors.red,fontWeight: FontWeight.bold),),
+                  Padding(padding: EdgeInsets.all(20.0),),
                   TextField(
-                    decoration:
-                    const InputDecoration(hintText: 'Please enter an address'),
+                    decoration: const InputDecoration(hintText: 'Please enter an address', icon: Icon(Icons.home,color: Colors.grey,)
+                    ),
                     controller: _addressTextController,
                   ),
-                  if (_distance != null) Text(_distance),
+                  Padding(padding: EdgeInsets.all(20.0),),
+                  if (_distance != null) Text("The distance between your current location and Address entered is $_distance metres"),
+                  Padding(padding: EdgeInsets.all(20.0),),
+                  if (_distance != null&&_distance<=100 && _distance>40) Text("You will reach destination in 100 minutes"),
+                  if (_distance != null&&_distance>100 ) Text("You will reach destination in more than 100 minutes"),
+                  if (_distance != null&&_distance<40) Text("You will reach destination in 40 minutes"),
+                  Padding(padding: EdgeInsets.all(20.0)),
                   RaisedButton(
                     child: const Text('Find Distance'),
                     onPressed: () {
@@ -90,7 +100,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
   /// For getting coordinates from entered Address
   Future<void> _onLookupCoordinatesPressed(BuildContext context) async {
     final List<Placemark> placemarks = await Future(
@@ -125,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     final double distance = await Geolocator().distanceBetween(
         startLatitude, startLongitude, endLatitude, endLongitude);
     setState(() {
-      _distance = distance.toString();
+      _distance = distance;
     });
   }
 

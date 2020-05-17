@@ -11,6 +11,7 @@ class LoginSignupPage extends StatefulWidget {
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
 
+/// initialisation of variables
   final _formKey = new GlobalKey<FormState>();
   String _email;
   String _password;
@@ -19,7 +20,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   bool _isLoading;
   bool _passwordVisible;
   String _data;
+  var _emailController = TextEditingController();
+  var _pwdController = TextEditingController();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _pwdFocus = FocusNode();
 
+  /// Function for Validate and Save
   bool validateAndSave() {
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -29,6 +35,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return false;
   }
 
+  /// Function for Validate and Submit
   void validateAndSubmit() async {
     setState(() {
       _errorMessage = "";
@@ -62,6 +69,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     }
   }
 
+  /// Function for init state
   @override
   void initState() {
     _passwordVisible = false;
@@ -71,11 +79,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     super.initState();
   }
 
+  /// Function to reset form
   void resetForm() {
     _formKey.currentState.reset();
     _errorMessage = "";
   }
 
+  /// Function to toggle Form Mode
   void toggleFormMode() {
     resetForm();
     setState(() {
@@ -83,6 +93,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     });
   }
 
+  /// Function to build Widget
   @override
   Widget build(BuildContext context) {
     if(_isLoginForm){
@@ -91,6 +102,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     else{
       _data = "Registration Form";
     }
+
+    /// Function for Back Pressed Button
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: new Scaffold(
@@ -106,6 +119,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  /// Function for Waiting Screen
   Widget _showCircularProgress() {
     if (_isLoading) {
       return buildWaitingScreen();
@@ -116,6 +130,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  /// Function to show form
   Widget _showForm() {
     return new Container(
         padding: EdgeInsets.all(16.0),
@@ -135,6 +150,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ));
   }
 
+  /// Function to show error message
   Widget showErrorMessage() {
     if (_errorMessage.length > 0 && _errorMessage != null) {
       return new Text(
@@ -152,6 +168,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     }
   }
 
+  /// Function to show Logo
   Widget showLogo() {
     return new Hero(
       tag: 'hero',
@@ -163,18 +180,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: CircleAvatar(
             backgroundColor: Colors.transparent,
             radius: 100.0,
-            child: Image.asset('assets/aker.jpg'),
+            child: Text("COMPANY LOGO"),
           ),
         ),
       ),
     );
   }
 
-  var _emailController = TextEditingController();
-  var _pwdController = TextEditingController();
-  final FocusNode _emailFocus = FocusNode();
-  final FocusNode _pwdFocus = FocusNode();
-
+/// Function to show Email Input
   Widget showEmailInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 0.0),
@@ -200,6 +213,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  /// Function to show Password input
   Widget showPasswordInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
@@ -239,11 +253,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  /// Function to change Focus of Field
   _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
+  /// Function to show the secondary Button
   Widget showSecondaryButton() {
     return new FlatButton(
         child: new Text(
@@ -252,6 +268,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         onPressed: toggleFormMode);
   }
 
+  /// Function to show Primary Button
   Widget showPrimaryButton() {
     return new Padding(
         padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
@@ -269,6 +286,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ));
   }
 
+  /// Function for the back pressed button
   Future<bool> _onBackPressed() {
     return showDialog(
       context: context,
@@ -295,6 +313,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     ) ?? false;
   }
 
+  /// Function for building waiting Screen
   Widget buildWaitingScreen() {
     return Scaffold(
       body: Stack(
@@ -317,7 +336,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                         backgroundColor: Colors.white,
                         radius: 120.0,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage("assets/aker.jpg"),
+                          child: Text("Company Logo"),
                           radius: 100.0,
                         ),
                       ),
@@ -342,4 +361,5 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ),
     );
   }
+
 }
