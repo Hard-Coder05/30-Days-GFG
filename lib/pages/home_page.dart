@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutterdelivery/services/authentication.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:numberpicker/numberpicker.dart';
+
+import 'ChartPage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
@@ -15,13 +18,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager=true;
-
+  int _currentValue=0;
   Position _currentPosition;
   String _currentAddress;
 
   @override
   void initState() {
     super.initState();
+    _getCurrentLocation();
   }
 
   signOut() async {
@@ -71,7 +75,12 @@ class _HomePageState extends State<HomePage> {
                     child: const Text('Find Distance'),
                     onPressed: () {
                       _onLookupCoordinatesPressed(context);
-                      _onCalculatePressed();
+                    },
+                  ),
+                  RaisedButton(
+                    child: const Text('Display Chart'),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ChartPage()));
                     },
                   ),
                 ],
@@ -100,6 +109,7 @@ class _HomePageState extends State<HomePage> {
 
     if (placemarks != null && placemarks.isNotEmpty) {
       pos = placemarks[0];
+      _onCalculatePressed();
       final List<String> coords = placemarks
           .map((placemark) =>
       pos.position?.latitude.toString() +

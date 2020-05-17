@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   firebase_auth:
   geolocator:
+  charts_flutter:
+  numberpicker:
 
 
   # The following adds the Cupertino Icons font to your application.
