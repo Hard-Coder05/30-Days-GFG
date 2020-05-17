@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterdelivery/services/authentication.dart';
 
-import 'home_page.dart';
-import 'login_signup_page.dart';
+import '../Home/presentation/home_page.dart';
+import 'presentation/login_signup_page.dart';
 enum AuthStatus {
   NOT_DETERMINED,
   NOT_LOGGED_IN,
@@ -58,7 +58,6 @@ class _RootPageState extends State<RootPage> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-
             decoration: BoxDecoration(
                 color: Colors.lightBlue),
           ),
@@ -75,7 +74,7 @@ class _RootPageState extends State<RootPage> {
                         backgroundColor: Colors.white,
                         radius: 120.0,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage("assets/aker.jpg"),
+                          child: Text("COMPANY LOGO"),
                           radius: 100.0,
                         ),
                       ),

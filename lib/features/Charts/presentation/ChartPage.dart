@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutterdelivery/features/Charts/model/weather_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:numberpicker/numberpicker.dart';
@@ -15,6 +16,7 @@ class _ChartPageState extends State<ChartPage> {
   Timer timer;
   int _current=2000;
 
+  /// Function to show Dialog Box for Selecting Year
   void _showDialog() {
     showDialog<int>(
         context: context,
@@ -29,38 +31,41 @@ class _ChartPageState extends State<ChartPage> {
     ).then((value) => _current = value);
   }
 
+  /// Function to call API Data
   makeRequest() async {
     var response = await http.get(
       'https://s3.eu-west-2.amazonaws.com/interview-question-data/metoffice/Rainfall-England.json',
       headers: {'Accept': 'application/json'},
     );
-
     setState(() {
       data = json.decode(response.body);
     });
   }
 
+  /// Function for init state
   @override
   void initState() {
     super.initState();
     timer = new Timer.periodic(new Duration(seconds: 2), (t) => makeRequest());
   }
 
+  /// Function for Disposal of Timer
   @override
   void dispose() {
     timer.cancel();
     super.dispose();
   }
 
+  /// Main widget
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Year $_current RainFall in England'),
+        title: new Text('RainFall in England in Year $_current '),
       ),
       body: data == null ? CircularProgressIndicator() : createChart(),
       floatingActionButton: new FloatingActionButton.extended(
-        icon: Icon(Icons.attach_money),
+        icon: Icon(Icons.date_range),
         tooltip: "Select Year",
         label: Text("Select Year"),
         onPressed: _showDialog,
@@ -68,31 +73,32 @@ class _ChartPageState extends State<ChartPage> {
     );
   }
 
-  charts.Series<LiveWerkzeuge, String> createSeries(int i) {
-    return charts.Series<LiveWerkzeuge, String>(
+  /// Function for creating Bar Chart Data Items
+  charts.Series<WeatherData, String> createSeries(int i) {
+    return charts.Series<WeatherData, String>(
       id: "DATA",
-      domainFn: (LiveWerkzeuge wear, _) => wear.wsp,
-      measureFn: (LiveWerkzeuge wear, _) => wear.belastung,
-      displayName: "Year = $_current",
+      domainFn: (WeatherData dd, _) => dd.Month,
+      measureFn: (WeatherData dd, _) => dd.Value,
       data: [
-        LiveWerkzeuge('JAN', data[i+0]['value']),
-        LiveWerkzeuge('FEB', data[i+1]['value']),
-        LiveWerkzeuge('MAR', data[i+2]['value']),
-        LiveWerkzeuge('APR', data[i+3]['value']),
-        LiveWerkzeuge('MAY', data[i+4]['value']),
-        LiveWerkzeuge('JUN', data[i+5]['value']),
-        LiveWerkzeuge('JUL', data[i+6]['value']),
-        LiveWerkzeuge('AUG', data[i+7]['value']),
-        LiveWerkzeuge('SEP', data[i+8]['value']),
-        LiveWerkzeuge('OCT', data[i+9]['value']),
-        LiveWerkzeuge('NOV', data[i+10]['value']),
-        LiveWerkzeuge('DEC', data[i+11]['value']),
+        WeatherData('JAN', data[i+0]['value']),
+        WeatherData('FEB', data[i+1]['value']),
+        WeatherData('MAR', data[i+2]['value']),
+        WeatherData('APR', data[i+3]['value']),
+        WeatherData('MAY', data[i+4]['value']),
+        WeatherData('JUN', data[i+5]['value']),
+        WeatherData('JUL', data[i+6]['value']),
+        WeatherData('AUG', data[i+7]['value']),
+        WeatherData('SEP', data[i+8]['value']),
+        WeatherData('OCT', data[i+9]['value']),
+        WeatherData('NOV', data[i+10]['value']),
+        WeatherData('DEC', data[i+11]['value']),
       ],
     );
   }
 
+  /// Function for creating Bar Chart
   Widget createChart() {
-    List<charts.Series<LiveWerkzeuge, String>> seriesList = [];
+    List<charts.Series<WeatherData, String>> seriesList = [];
     int i=0+(_current-1910)*12;
     seriesList.add(createSeries(i));
     return new charts.BarChart(
@@ -102,8 +108,4 @@ class _ChartPageState extends State<ChartPage> {
   }
 }
 
-class LiveWerkzeuge {
-  final String wsp;
-  final double belastung;
-  LiveWerkzeuge(this.wsp, this.belastung);
-}
+

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutterdelivery/services/authentication.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:numberpicker/numberpicker.dart';
-
-import 'ChartPage.dart';
+import '../../Charts/presentation/ChartPage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
@@ -17,17 +15,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  /// Initialization of Variables
+  final TextEditingController _addressTextController = TextEditingController();
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager=true;
-  int _currentValue=0;
+  List<String> _placemarkCoords = [];
+  final Geolocator _geolocator = Geolocator();
+  Placemark pos;
   Position _currentPosition;
   String _currentAddress;
+  String _distance;
 
+  /// Function for init state initialization
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
   }
 
+  /// Function for SignOut
   signOut() async {
     try {
       await widget.auth.signOut();
@@ -37,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  /// Function for Widget Building
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -58,13 +64,6 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   if (_currentAddress != null) Text(_currentAddress),
-                  FlatButton(
-                    child: Text("Find Current Location",style: TextStyle(color: Colors.white)),
-                    color: Colors.green,
-                    onPressed: () {
-                      _getCurrentLocation();
-                    },
-                  ),
                   TextField(
                     decoration:
                     const InputDecoration(hintText: 'Please enter an address'),
@@ -92,11 +91,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  final Geolocator _geolocator = Geolocator();
-  final TextEditingController _addressTextController = TextEditingController();
-
-  List<String> _placemarkCoords = [];
-  Placemark pos;
+  /// For getting coordinates from entered Address
   Future<void> _onLookupCoordinatesPressed(BuildContext context) async {
     final List<Placemark> placemarks = await Future(
             () => _geolocator.placemarkFromAddress(_addressTextController.text))
@@ -106,7 +101,6 @@ class _HomePageState extends State<HomePage> {
       ));
       return Future.value(List<Placemark>());
     });
-
     if (placemarks != null && placemarks.isNotEmpty) {
       pos = placemarks[0];
       _onCalculatePressed();
@@ -121,14 +115,13 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-String _distance;
-  Future<void> _onCalculatePressed() async {
 
+  /// For Calculating the distance between entered address and current location in metres
+  Future<void> _onCalculatePressed() async {
     final double startLatitude = double.parse(pos.position?.latitude.toString());
     final double startLongitude = double.parse(pos.position?.longitude.toString());
     final double endLatitude = double.parse(_currentPosition.latitude.toString());
     final double endLongitude = double.parse(_currentPosition.longitude.toString());
-
     final double distance = await Geolocator().distanceBetween(
         startLatitude, startLongitude, endLatitude, endLongitude);
     setState(() {
@@ -136,6 +129,7 @@ String _distance;
     });
   }
 
+  /// Function for getting Current Location
   _getCurrentLocation() {
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -143,20 +137,18 @@ String _distance;
       setState(() {
         _currentPosition = position;
       });
-
       _getAddressFromLatLng();
     }).catchError((e) {
       print(e);
     });
   }
 
+  /// Function for getting Address from coordinates
   _getAddressFromLatLng() async {
     try {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(
           _currentPosition.latitude, _currentPosition.longitude);
-
       Placemark place = p[0];
-
       setState(() {
         _currentAddress =
         "${place.administrativeArea}, ${place.postalCode}, ${place.country}";
@@ -166,8 +158,7 @@ String _distance;
     }
   }
 
-
-
+/// Function for back pressed Event
   Future<bool> _onBackPressed() {
     return showDialog(
       context: context,
@@ -193,4 +184,5 @@ String _distance;
       },
     ) ?? false;
   }
+
 }
