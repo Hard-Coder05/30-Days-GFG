@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutterdelivery/features/Charts/model/weather_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:numberpicker/numberpicker.dart';
@@ -24,7 +23,7 @@ class _ChartPageState extends State<ChartPage> {
           return new NumberPickerDialog.integer(
             minValue: 1910,
             maxValue: 2017,
-            title: new Text("Pick a new price"),
+            title: new Text("Pick a Year"),
             initialIntegerValue: _current,
           );
         }
@@ -46,7 +45,7 @@ class _ChartPageState extends State<ChartPage> {
   @override
   void initState() {
     super.initState();
-    timer = new Timer.periodic(new Duration(seconds: 2), (t) => makeRequest());
+    timer = new Timer.periodic(new Duration(seconds: 1), (t) => makeRequest());
   }
 
   /// Function for Disposal of Timer
@@ -63,7 +62,7 @@ class _ChartPageState extends State<ChartPage> {
       appBar: new AppBar(
         title: new Text('RainFall in England in Year $_current '),
       ),
-      body: data == null ? CircularProgressIndicator() : createChart(),
+      body: data == null ? WaitingScreen() : createChart(),
       floatingActionButton: new FloatingActionButton.extended(
         icon: Icon(Icons.date_range),
         tooltip: "Select Year",
@@ -106,6 +105,61 @@ class _ChartPageState extends State<ChartPage> {
       barGroupingType: charts.BarGroupingType.grouped,
     );
   }
+
+  Widget WaitingScreen(){
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.lightBlue),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 120.0,
+                        child: CircleAvatar(
+                          child: Text("COMPANY LOGO"),
+                          radius: 100.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child:Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The Model for the JSON API Data
+class WeatherData {
+  final String Month;
+  final double Value;
+  WeatherData(this.Month, this.Value);
 }
 
 
