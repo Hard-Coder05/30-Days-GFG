@@ -1,6 +1,7 @@
 # Delivery App
 
-This is the code for a flutter application.
+This is the code for a flutter application fetches current location, coordinates of entered address, distance between both and plots graph using json API data.
+
 
 ### Features:
 
